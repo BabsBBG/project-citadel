@@ -340,6 +340,7 @@ Syslog
 | Initial Access | Valid Accounts | T1078 | Attacker targeting known account `azureuser` |
 | Discovery | Network Service Discovery | T1046 | Reconnaissance implied before targeting port 22 |
 | Defense Evasion | Use Alternate Authentication Material | T1550 | Attempted public key bypass |
+| Initial Access | Exploit Public-Facing Application | T1190 | Azure Bastion recommended - documented as known gap |
 
 #### Containment Response
 
