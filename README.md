@@ -6,9 +6,9 @@
 
 ## Overview
 
-Project Citadel is an end-to-end Azure cloud security implementation built for Nexus Financial Services — a fictional mid-size fintech standing up its first secure cloud environment. The project covers every layer of cloud security: identity, network, compute, storage, secrets management, logging, threat detection, incident response, compliance enforcement, and infrastructure as code.
+Project Citadel is an end-to-end Azure cloud security implementation built for Nexus Financial Services, a fictional mid-size fintech standing up its first secure cloud environment. The project covers every layer of cloud security: identity, network, compute, storage, secrets management, logging, threat detection, incident response, compliance enforcement, and infrastructure as code.
 
-Built to reflect real-world security engineering decisions — to understand why each control exists and what breaks without it. Least privilege by default, identity-first architecture, continuous compliance over point-in-time hardening, and a full SOC-style incident response workflow from detection to containment.
+Built to reflect real-world security engineering decisions, to understand why each control exists and what breaks without it. Least privilege by default, identity-first architecture, continuous compliance over point-in-time hardening, and a full SOC-style incident response workflow from detection to containment.
 **  ---
 
 ## Architecture
@@ -116,7 +116,7 @@ Built to reflect real-world security engineering decisions — to understand why
 
 **Objective:** Enforce least privilege and strong authentication before any resource is deployed.
 
-Created a non-admin user `abigail.analyst` in Entra ID — day-to-day operations should never run under a Global Administrator account. Grouped her under `SecurityTeam` for role-based access management at scale. Assigned the `Reader` RBAC role at subscription level — read-only by default, explicit grants required for any write operation. Enabled MFA for all non-admin accounts.
+Created a non-admin user `abigail.analyst` in Entra ID, day-to-day operations should never run under a Global Administrator account. Grouped her under `SecurityTeam` for role-based access management at scale. Assigned the `Reader` RBAC role at subscription level - read-only by default, explicit grants required for any write operation. Enabled MFA for all non-admin accounts.
 
 **Key principle:** Identity is the new perimeter. Every access decision flows through Entra ID.
 <img width="493" height="269" alt="MFA enabled for Abigail Analyst" src="https://github.com/user-attachments/assets/5f760999-37f2-496f-a66a-74e11e6c95da" />
@@ -127,15 +127,15 @@ Created a non-admin user `abigail.analyst` in Entra ID — day-to-day operations
 
 **Objective:** Segment the environment and control all traffic flows explicitly.
 
-Built `Citadel-VNet` with a public and private subnet — workloads with different trust levels never share the same network segment. Deployed `Citadel-NSG` with two inbound rules:
+Built `Citadel-VNet` with a public and private subnet, because workloads with different trust levels never share the same network segment. Deployed `Citadel-NSG` with two inbound rules:
 
-- `Allow-SSH-MyIP` (Priority 100) — SSH allowed only from the engineer's IP
-- `Deny-All-Inbound` (Priority 200) — everything else blocked
+- `Allow-SSH-MyIP` (Priority 100) - SSH allowed only from the engineer's IP
+- `Deny-All-Inbound` (Priority 200) - everything else blocked
 
 Associated the NSG to `Citadel-PublicSubnet`. No traffic reaches the VM without explicitly passing through these rules.
 
 > **Note:** West US 2 was selected after East US hit vCPU quota limits on Standard_B1s for the free tier subscription. This is a common real-world constraint — always validate quota before deployment.
-<img width="898" height="185" alt="Citadel-NSG inbound rules — Allow-SSH-MyIP + Deny-All-Inbound" src="https://github.com/user-attachments/assets/eda244f6-cedd-41a2-a8cd-9e1ab2de6438" />
+<img width="898" height="185" alt="Citadel-NSG inbound rules - Allow-SSH-MyIP + Deny-All-Inbound" src="https://github.com/user-attachments/assets/eda244f6-cedd-41a2-a8cd-9e1ab2de6438" />
 
 ---
 
@@ -143,7 +143,7 @@ Associated the NSG to `Citadel-PublicSubnet`. No traffic reaches the VM without 
 
 **Objective:** Deploy compute inside the secured network boundary and reduce attack surface.
 
-Deployed `Citadel-VM` (Ubuntu 24.04 LTS, Standard_B1s) inside `Citadel-PublicSubnet`. SSH key authentication enforced at deployment — no password auth ever enabled.
+Deployed `Citadel-VM` (Ubuntu 24.04 LTS, Standard_B1s) inside `Citadel-PublicSubnet`. SSH key authentication enforced at deployment - no password auth ever enabled.
 
 Post-deployment hardening:
 
@@ -163,7 +163,7 @@ sudo grep -E "PermitRootLogin|PasswordAuthentication" /etc/ssh/sshd_config
 
 **Result:** `PermitRootLogin no` | `PasswordAuthentication no`
 
-> **Note:** Ubuntu 24.04 uses `ssh` not `sshd` as the service name. The default `PermitRootLogin` value is `prohibit-password` — not `yes` — requiring a targeted sed replacement.
+> **Note:** Ubuntu 24.04 uses `ssh` not `sshd` as the service name. The default `PermitRootLogin` value is `prohibit-password` — not `yes` - requiring a targeted sed replacement.
 <img width="571" height="85" alt="Terminal — grep output showing PermitRootLogin no + PasswordAuthentication no" src="https://github.com/user-attachments/assets/f4442df5-77f9-4d95-b755-cfaa4ced2a47" />
 
 ---
@@ -181,10 +181,10 @@ Created storage account with four security controls enforced at creation:
 | Storage account key access | Disabled | Eliminates shared key auth, forces Entra ID |
 | Minimum TLS | 1.2 | Blocks deprecated TLS 1.0/1.1 |
 
-**Verification:** Uploaded a file to `citadel-data` container, attempted direct URL access — returned `PublicAccessNotPermitted`.
-<img width="572" height="178" alt="Browser — PublicAccessNotPermitted error on blob URL" src="https://github.com/user-attachments/assets/74f1d3c9-9e0c-49f6-b559-83031904371f" />
+**Verification:** Uploaded a file to `citadel-data` container, attempted direct URL access - returned `PublicAccessNotPermitted`.
+<img width="572" height="178" alt="Browser - PublicAccessNotPermitted error on blob URL" src="https://github.com/user-attachments/assets/74f1d3c9-9e0c-49f6-b559-83031904371f" />
 
-> **Lesson learned:** Disabling storage account key access immediately blocks the portal's default authentication method. Fix: assign `Storage Blob Data Contributor` role to your Entra ID account via IAM before disabling key access. This is exactly why Entra ID auth is superior — every access is identity-bound and auditable.
+> **Lesson learned:** Disabling storage account key access immediately blocks the portal's default authentication method. Fix: assign `Storage Blob Data Contributor` role to your Entra ID account via IAM before disabling key access. This is exactly why Entra ID auth is superior, every access is identity-bound and auditable.
 
 ---
 
@@ -200,9 +200,9 @@ Value: Server=nexusfinancial-db.postgres.database.azure.com;Database=novapayprod
 Type: database/connection-string
 ```
 
-Enabled system-assigned managed identity on `Citadel-VM`. Granted Key Vault access policy — `Get` and `List` on secrets only. No other permissions. Least privilege applied to secrets access.
+Enabled system-assigned managed identity on `Citadel-VM`. Granted Key Vault access policy - `Get` and `List` on secrets only. No other permissions. Least privilege applied to secrets access.
 
-**Proof of concept — secret retrieved from VM with zero hardcoded credentials:**
+**Proof of concept - secret retrieved from VM with zero hardcoded credentials:**
 
 ```bash
 az login --identity
@@ -229,10 +229,10 @@ Created `Citadel-LAW` Log Analytics Workspace as the central log destination for
 > **Note:** Legacy agents management has been removed from newer Log Analytics workspaces. Data Collection Rules are the current method for configuring log collection on Linux VMs.
 
 **Storage log collection:**
-- Enabled diagnostic settings on blob service — StorageRead, StorageWrite, StorageDelete → `Citadel-LAW`
+- Enabled diagnostic settings on blob service - StorageRead, StorageWrite, StorageDelete → `Citadel-LAW`
 
 **Alerting:**
-- Created `Citadel-Alert-VMHeartbeat` — fires when VM stops sending heartbeat signals to workspace
+- Created `Citadel-Alert-VMHeartbeat` - fires when VM stops sending heartbeat signals to workspace
 <img width="901" height="377" alt="Log analytics — syslog facility count — authpriv 18, auth 6" src="https://github.com/user-attachments/assets/a46a2833-e448-45ae-b46d-e8b757863fb2" />
 
 ---
@@ -270,9 +270,9 @@ These are documented intentionally
 Deployed Sentinel connected to `Citadel-LAW`.
 
 **Data connector — Azure Activity:**
-Connected via Azure Policy Assignment wizard — streams all subscription-level activity logs into the workspace.
+Connected via Azure Policy Assignment wizard - streams all subscription-level activity logs into the workspace.
 
-> **Blocker hit:** Remediation task failed — `Microsoft.PolicyInsights` namespace not registered on subscription.
+> **Blocker hit:** Remediation task failed - `Microsoft.PolicyInsights` namespace not registered on subscription.
 > **Fix:** Registered provider under Subscription → Resource providers, then manually created remediation task.
 
 **Detection rule — Failed Login Attempts:**
@@ -307,7 +307,7 @@ for ($i=1; $i -le 15; $i++) {
 }
 ```
 
-**Result:** 15 × `Permission denied (publickey)` — connection attempts logged on VM.
+**Result:** 15 × `Permission denied (publickey)` - connection attempts logged on VM.
 
 #### Investigation — VM Side
 
@@ -317,7 +317,7 @@ sudo journalctl -u ssh --since "1 hour ago" | tail -20
 
 **Finding:** All 15 connection resets from `197.210.52.203` confirmed in systemd journal at preauth stage.
 
-> **Note:** Ubuntu 24.04 does not write to `/var/log/auth.log` by default — authentication events are handled by the systemd journal. Use `journalctl -u ssh` instead.
+> **Note:** Ubuntu 24.04 does not write to `/var/log/auth.log` by default - authentication events are handled by the systemd journal. Use `journalctl -u ssh` instead.
 
 #### Investigation — Log Analytics
 
@@ -330,7 +330,7 @@ Syslog
 | order by TimeGenerated desc
 ```
 
-**Finding:** Attacker IP `197.210.52.203` confirmed in Log Analytics — session events tracked through the cloud-side logging pipeline.
+**Finding:** Attacker IP `197.210.52.203` confirmed in Log Analytics - session events tracked through the cloud-side logging pipeline.
 
 #### MITRE ATT&CK Mapping
 
@@ -340,7 +340,7 @@ Syslog
 | Initial Access | Valid Accounts | T1078 | Attacker targeting known account `azureuser` |
 | Discovery | Network Service Discovery | T1046 | Reconnaissance implied before targeting port 22 |
 | Defense Evasion | Use Alternate Authentication Material | T1550 | Attempted public key bypass |
-| Initial Access | Exploit Public-Facing Application | T1190 | Azure Bastion recommended - documented as known gap |
+| Initial Access | Exploit Public-Facing Application | T1190 | Azure Bastion recommended, documented as known gap |
 
 #### Containment Response
 
@@ -370,7 +370,7 @@ Assigned three built-in policies scoped to `Citadel-RG` in Audit mode:
 | Storage accounts should restrict network access | Citadel-Policy-NetworkAccess | No unrestricted network access |
 | Storage account public access should be disallowed | Citadel-Policy-StoragePublicAccess | No anonymous blob access |
 
-> All three policies evaluate to **Compliant** against the Citadel storage account — the environment was configured correctly from the start.
+> All three policies evaluate to **Compliant** against the Citadel storage account, the environment was configured correctly from the start.
 
 **Why Audit mode:** In production, start with Audit to gain visibility before switching to Deny. Jumping straight to Deny in a live environment can break existing non-compliant resources.
 <img width="749" height="62" alt="Policy assignments — all three citadel policies listed scoped to Citadel-rg" src="https://github.com/user-attachments/assets/4c1af717-80ea-4931-bbce-7ab1adc6ac5b" />
@@ -379,7 +379,7 @@ Assigned three built-in policies scoped to `Citadel-RG` in Audit mode:
 
 ### Module 11 — Infrastructure as Code (ARM Template)
 
-**Objective:** Make the entire environment reproducible — not just documented.
+**Objective:** Make the entire environment reproducible, not just documented.
 
 Exported `Citadel-RG` as ARM template via Portal → Resource Groups → Export template.
 
@@ -387,9 +387,9 @@ Exported `Citadel-RG` as ARM template via Portal → Resource Groups → Export 
 - `template.json` — full environment definition
 - `parameters.json` — parameterised values for redeployment
 
-The portal also generated **Bicep** version of the same infrastructure — both formats available in the `/arm-template` directory.
+The portal also generated **Bicep** version of the same infrastructure, both formats available in the `/arm-template` directory.
 
-> **Note:** Export completed with minor errors — some Sentinel-specific resources are not exportable via the portal method. Core infrastructure (VNet, NSG, VM, storage, Key Vault) fully captured.
+> **Note:** Export completed with minor errors - some Sentinel-specific resources are not exportable via the portal method. Core infrastructure (VNet, NSG, VM, storage, Key Vault) fully captured.
 <img width="856" height="371" alt="Export template page — ARM JSON with resource parameters visible" src="https://github.com/user-attachments/assets/c7cdc8d4-98f4-4899-9460-e4ab494c1a0d" />
 
 ---
