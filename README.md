@@ -397,24 +397,24 @@ The portal also generated **Bicep** version of the same infrastructure, both for
 
 **Objective:** Move Sentinel from reactive detection to proactive threat-informed defence.
 
-Configured Entra ID diagnostic settings to stream SigninLogs, AuditLogs, and ServicePrincipalSignInLogs into `Citadel-LAW` — completing the identity layer visibility gap.
+Configured Entra ID diagnostic settings to stream SigninLogs, AuditLogs, and ServicePrincipalSignInLogs into `Citadel-LAW` - completing the identity layer visibility gap.
 
 ![Entra ID Diagnostic Settings](screenshots/12-cti-lab/entra-diagnostic-settings.png)
 
-Connected AlienVault OTX via TAXII 2.1 connector — pulling 1,270+ threat indicators automatically into the `ThreatIntelligenceIndicator` table. Uploaded three manual IOCs including the attacker IP from INC-001.
+Connected AlienVault OTX via TAXII 2.1 connector - pulling 1,270+ threat indicators automatically into the `ThreatIntelligenceIndicator` table. Uploaded three manual IOCs including the attacker IP from INC-001.
 
 ![AlienVault TAXII Configured](screenshots/12-cti-lab/alienvault-taxii-configured.png)
 
 ![Threat Indicators Uploaded](screenshots/12-cti-lab/threat-indicators-uploaded.png)
 
 Created two additional detection rules:
-- `Citadel-Rule-ThreatIntelMatch` — correlates Syslog events against known malicious IPs
-- `Citadel-Rule-FailedSignins` — detects 3+ failed Entra ID sign-ins from same IP in 5 minutes
+- `Citadel-Rule-ThreatIntelMatch` - correlates Syslog events against known malicious IPs
+- `Citadel-Rule-FailedSignins` - detects 3+ failed Entra ID sign-ins from same IP in 5 minutes
 
 ![ThreatIntel Detection Rule](screenshots/12-cti-lab/threatintel-detection-rule.png)
 ![Failed Signins Detection Rule](screenshots/12-cti-lab/failed-signins-detection-rule.png)
 
-Built `Citadel-SOC-Dashboard` workbook — live panels for failed login trends, top attacker IPs, and threat intelligence indicators.
+Built `Citadel-SOC-Dashboard` workbook - live panels for failed login trends, top attacker IPs, and threat intelligence indicators.
 
 ![Citadel SOC Dashboard](screenshots/12-cti-lab/citadel-soc-faiedogin-dashboard.png)
 ![Citadel SOC Dashboard](screenshots/12-cti-lab/citadel-soc-threat-intel-dashboard.png) 
